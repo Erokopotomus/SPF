@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SYP Analytics - SPF Trading</title>
+  <style>
+    :root {
+      --bg: #0d1117;
+      --panel: #161b22;
+      --panel-alt: #21262d;
+      --border: #30363d;
+      --text: #c9d1d9;
+      --muted: #8b949e;
+      --positive: #3fb950;
+      --negative: #f85149;
+      --warn: #d29922;
+      --info: #58a6ff;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 220px;
+      background: var(--panel);
+      border-right: 1px solid var(--border);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+    }
+    .sidebar.collapsed { width: 60px; }
+    .sidebar-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--border);
+    }
+    .logo { font-size: 18px; font-weight: 700; color: var(--positive); }
+    .sidebar.collapsed .logo span { display: none; }
+
+    /* Nav */
+    .nav-group { margin-bottom: 16px; }
+    .nav-group-label {
+      font-size: 10px;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 8px;
+      padding-left: 8px;
+    }
+    .sidebar.collapsed .nav-group-label { display: none; }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      color: var(--muted);
+      transition: all 0.15s;
+      font-size: 13px;
+    }
+    .nav-item:hover { background: var(--panel-alt); color: var(--text); }
+    .nav-item.active { background: var(--positive); color: #000; font-weight: 600; }
+    .sidebar.collapsed .nav-item span { display: none; }
+
+    /* Main content */
+    .main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .topbar {
+      height: 56px;
+      background: var(--panel);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+    }
+    .topbar-left { display: flex; align-items: center; gap: 16px; }
+    .topbar-right { display: flex; align-items: center; gap: 12px; }
+
+    #content {
+      flex: 1;
+      padding: 24px;
+      overflow-y: auto;
+    }
+
+    /* Cards */
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .card-header {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .card-title { font-weight: 600; font-size: 14px; }
+    .card-body { padding: 16px; }
+
+    /* KPIs */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 16px;
+    }
+    .kpi {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 16px;
+      text-align: center;
+    }
+    .kpi-label { font-size: 10px; text-transform: uppercase; color: var(--muted); margin-bottom: 4px; }
+    .kpi-value { font-size: 24px; font-weight: 700; }
+    .kpi-value.positive { color: var(--positive); }
+    .kpi-value.negative { color: var(--negative); }
+    .kpi-value.warn { color: var(--warn); }
+    .kpi-sub { font-size: 11px; color: var(--muted); margin-top: 4px; }
+
+    /* Tables */
+    .tbl { width: 100%; border-collapse: collapse; font-size: 12px; }
+    .tbl th, .tbl td { padding: 10px 12px; text-align: left; border-bottom: 1px solid var(--border); }
+    .tbl th { color: var(--muted); font-weight: 500; font-size: 11px; text-transform: uppercase; }
+    .tbl tr:hover { background: var(--panel-alt); }
+    .tbl tr.selected { background: rgba(88, 166, 255, 0.1); }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: all 0.15s;
+    }
+    .btn-sm { padding: 4px 10px; font-size: 11px; }
+    .btn-success { background: var(--positive); color: #000; }
+    .btn-success:hover { filter: brightness(1.1); }
+    .btn-danger { background: var(--negative); color: #fff; }
+    .btn-danger:hover { filter: brightness(1.1); }
+    .btn-default { background: var(--panel-alt); color: var(--text); border-color: var(--border); }
+    .btn-default:hover { background: var(--border); }
+
+    /* Badges */
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 500;
+    }
+    .badge.positive { background: rgba(63, 185, 80, 0.2); color: var(--positive); }
+    .badge.negative { background: rgba(248, 81, 73, 0.2); color: var(--negative); }
+    .badge.warn { background: rgba(210, 153, 34, 0.2); color: var(--warn); }
+    .badge.info { background: rgba(88, 166, 255, 0.2); color: var(--info); }
+
+    /* Forms */
+    .form-row { display: flex; gap: 16px; margin-bottom: 16px; }
+    .form-group { flex: 1; }
+    .form-label { display: block; font-size: 11px; color: var(--muted); margin-bottom: 6px; text-transform: uppercase; }
+    input, select, textarea {
+      width: 100%;
+      padding: 10px 12px;
+      background: var(--panel-alt);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text);
+      font-size: 13px;
+    }
+    input:focus, select:focus, textarea:focus { outline: none; border-color: var(--info); }
+
+    /* Modals */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+    .modal {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      width: 500px;
+      max-width: 90vw;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+    .modal-lg { width: 700px; }
+    .modal-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .modal-title { font-weight: 600; font-size: 16px; }
+    .modal-close { background: none; border: none; color: var(--muted); font-size: 24px; cursor: pointer; }
+    .modal-body { padding: 20px; }
+    .modal-footer { padding: 16px 20px; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 12px; }
+
+    /* Grid helpers */
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+
+    /* Empty state */
+    .empty-state { text-align: center; padding: 48px 24px; color: var(--muted); }
+    .empty-state h3 { color: var(--text); margin-bottom: 8px; }
+
+    /* Toast */
+    #toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px 20px;
+      display: none;
+      z-index: 2000;
+    }
+    #toast.show { display: block; animation: slideIn 0.3s ease; }
+    #toast.success { border-color: var(--positive); }
+    #toast.error { border-color: var(--negative); }
+    #toast.info { border-color: var(--info); }
+    @keyframes slideIn { from { transform: translateX(100px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+    /* Mode toggle */
+    .mode-toggle {
+      display: flex;
+      background: var(--panel-alt);
+      border-radius: 6px;
+      padding: 2px;
+    }
+    .mode-btn {
+      padding: 6px 12px;
+      border-radius: 4px;
+      font-size: 11px;
+      cursor: pointer;
+      color: var(--muted);
+    }
+    .mode-btn.active { background: var(--positive); color: #000; font-weight: 600; }
+  </style>
+</head>
+<body>
+  <!-- Sidebar -->
+  <div id="sidebar" class="sidebar">
+    <div class="sidebar-header">
+      <div class="logo">📊 <span>SYP Analytics</span></div>
+    </div>
+    <div id="nav"></div>
+  </div>
+
+  <!-- Main -->
+  <div class="main">
+    <div class="topbar">
+      <div class="topbar-left">
+        <div class="mode-toggle">
+          <div class="mode-btn" onclick="setTradingMode('syp')">SYP</div>
+          <div class="mode-btn active" onclick="setTradingMode('spf')">SPF</div>
+        </div>
+      </div>
+      <div class="topbar-right">
+        <select id="trader-select" onchange="S.trader=this.value;SS('trader',S.trader);render()"></select>
+      </div>
+    </div>
+    <div id="content"></div>
+  </div>
+
+  <!-- Modal container -->
+  <div id="modal"></div>
+
+  <!-- Toast -->
+  <div id="toast"></div>
+
+  <!-- Scripts -->
+  <script src="state_enhanced.js"></script>
+  <script src="spruce.js"></script>
+  <script src="spruce_views.js"></script>
+  <script>
+    // Toast notification
+    function showToast(msg, type = 'info') {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.className = 'show ' + type;
+      setTimeout(() => t.className = '', 3000);
+    }
+
+    // Modal
+    function closeModal() {
+      document.getElementById('modal').innerHTML = '';
+    }
+
+    // Navigation
+    function go(view) {
+      S.view = view;
+      render();
+    }
+
+    // Render nav
+    function renderNav() {
+      const nav = getNav();
+      const groups = getNavGroups();
+      const container = document.getElementById('nav');
+
+      let html = '';
+      groups.forEach(g => {
+        html += `<div class="nav-group">
+          <div class="nav-group-label">${g.label}</div>
+          ${g.items.map(id => {
+            const item = nav.find(n => n.id === id);
+            if (!item) return '';
+            return `<div class="nav-item ${S.view === id ? 'active' : ''}" onclick="go('${id}')">
+              ${item.icon} <span>${item.label}</span>
+            </div>`;
+          }).join('')}
+        </div>`;
+      });
+      container.innerHTML = html;
+
+      // Update mode toggle
+      document.querySelectorAll('.mode-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.textContent.toLowerCase() === S.tradingMode);
+      });
+
+      // Update trader select
+      const traders = S.tradingMode === 'spf' ? SPF_TRADERS : SYP_TRADERS;
+      const select = document.getElementById('trader-select');
+      select.innerHTML = traders.map(t => `<option value="${t}" ${S.trader === t ? 'selected' : ''}>${t}</option>`).join('');
+    }
+
+    // Save all data to localStorage
+    async function saveAllLocal() {
+      SS('buys', S.buys);
+      SS('sells', S.sells);
+      SS('customers', S.customers);
+      SS('mills', S.mills);
+      SS('reloadInventory', S.reloadInventory);
+      SS('transitInventory', S.transitInventory);
+      SS('activeOffers', S.activeOffers);
+      SS('outboundTrucks', S.outboundTrucks);
+      SS('offerHistory', S.offerHistory);
+      SS('reloadFilter', S.reloadFilter);
+      SS('transitFilter', S.transitFilter);
+    }
+
+    // Main render
+    function render() {
+      renderNav();
+
+      // Try SPF views first
+      if (S.tradingMode === 'spf' && renderSPFView()) {
+        return;
+      }
+
+      // Fallback: basic dashboard
+      const c = document.getElementById('content');
+      c.innerHTML = `
+        <div class="card">
+          <div class="card-body">
+            <h2>Welcome to SYP Analytics</h2>
+            <p style="color:var(--muted);margin-top:8px">Select a view from the sidebar to get started.</p>
+          </div>
+        </div>
+      `;
+    }
+
+    // Init
+    render();
+  </script>
+</body>
+</html>
