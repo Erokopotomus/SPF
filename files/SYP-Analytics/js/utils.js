@@ -134,8 +134,10 @@ function allData(){
 // Get current trader's CRM only (Admin sees all), deduplicated by name
 function dedupeByName(arr){const seen=new Set();return arr.filter(x=>{if(!x.name||seen.has(x.name))return false;seen.add(x.name);return true})}
 function myMills(){
-  if(S.trader==='Admin')return dedupeByName(S.mills);
-  return dedupeByName(S.mills.filter(m=>m.trader===S.trader||!m.trader));
+  const mode=S.tradingMode||'syp';
+  const deptFilter=m=>!m.department||m.department===mode||m.department==='both';
+  if(S.trader==='Admin')return dedupeByName(S.mills.filter(deptFilter));
+  return dedupeByName(S.mills.filter(m=>(m.trader===S.trader||!m.trader)&&deptFilter(m)));
 }
 function myCustomers(){
   if(S.trader==='Admin')return dedupeByName(S.customers);

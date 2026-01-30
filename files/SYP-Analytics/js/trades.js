@@ -321,6 +321,7 @@ async function saveCust(oldName){
 function showMillModal(m=null){
   const mill=m?S.mills.find(x=>x.name===m):null;
   const locs=mill?.locations||[mill?.origin].filter(Boolean);
+  const dept=mill?.department||S.tradingMode||'syp';
   document.getElementById('modal').innerHTML=`<div class="modal-overlay" onclick="closeModal()"><div class="modal" onclick="event.stopPropagation()">
     <div class="modal-header"><span class="modal-title positive">${mill?'EDIT':'NEW'} MILL</span><button class="modal-close" onclick="closeModal()">×</button></div>
     <div class="modal-body">
@@ -329,6 +330,11 @@ function showMillModal(m=null){
         <select id="m-trader" style="width:200px">${TRADERS.map(t=>`<option value="${t}" ${(mill?.trader||'Ian P')===t?'selected':''}>${t}</option>`).join('')}</select></div>
       </div>`:''}
       <div class="form-group"><label class="form-label">Mill Name</label><input type="text" id="m-name" value="${mill?.name||''}"></div>
+      <div class="form-group"><label class="form-label">Department</label><select id="m-department">
+        <option value="syp" ${dept==='syp'?'selected':''}>SYP Only</option>
+        <option value="spf" ${dept==='spf'?'selected':''}>SPF Only</option>
+        <option value="both" ${dept==='both'?'selected':''}>Both Departments</option>
+      </select></div>
       <div class="form-group">
         <label class="form-label">Locations (City, ST)</label>
         <div id="mill-locations">
@@ -356,7 +362,8 @@ function addMillLocation(){
 async function saveMill(oldName){
   const locations=[...document.querySelectorAll('.mill-loc')].map(el=>el.value.trim()).filter(Boolean);
   const assignedTrader=S.trader==='Admin'?(document.getElementById('m-trader')?.value||'Ian P'):S.trader;
-  const m={name:document.getElementById('m-name').value,location:locations[0]||'',products:locations,contact:document.getElementById('m-contact').value,phone:document.getElementById('m-phone').value,notes:document.getElementById('m-notes').value,trader:assignedTrader};
+  const department=document.getElementById('m-department')?.value||'syp';
+  const m={name:document.getElementById('m-name').value,location:locations[0]||'',products:locations,contact:document.getElementById('m-contact').value,phone:document.getElementById('m-phone').value,notes:document.getElementById('m-notes').value,trader:assignedTrader,department:department};
   if(!m.name){alert('Enter name');return}
   try{
     const existing=S.mills.find(x=>x.name===oldName);

@@ -109,8 +109,19 @@ const NAV_GROUPS_SPF=[
 function getNav() { return S.tradingMode === 'spf' ? NAV_SPF : NAV; }
 function getNavGroups() { return S.tradingMode === 'spf' ? NAV_GROUPS_SPF : NAV_GROUPS; }
 function getProducts() { return S.tradingMode === 'spf' ? SPF_PRODUCTS : PRODUCTS; }
-function getMills() { return S.tradingMode === 'spf' ? SPF_MILLS : MILLS; }
+function getDefaultMills() { return S.tradingMode === 'spf' ? SPF_MILLS : MILLS; }
 function getDests() { return S.tradingMode === 'spf' ? SPF_DESTS : DESTS; }
+// Get user mills filtered by current department (includes 'both')
+function getMills() {
+  const mode = S.tradingMode || 'syp';
+  return (S.mills || []).filter(m => !m.department || m.department === mode || m.department === 'both');
+}
+// Get all mill names for dropdowns (user's mills + default mills for current mode)
+function getMillNames() {
+  const userMills = getMills().map(m => m.name);
+  const defaultMills = getDefaultMills();
+  return [...new Set([...userMills, ...defaultMills])];
+}
 
 const LS=(k,d)=>{try{const v=localStorage.getItem('syp_'+k);return v?JSON.parse(v):d}catch{return d}};
 const SS=(k,v)=>{try{localStorage.setItem('syp_'+k,JSON.stringify(v))}catch{}};

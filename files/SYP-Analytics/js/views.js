@@ -2000,15 +2000,16 @@ function render(){
           </tbody></table></div></div>`;
     }
     else if(crmTab==='mills'){
+      const deptBadge=d=>d==='spf'?'<span class="badge badge-info" style="font-size:9px">SPF</span>':d==='both'?'<span class="badge badge-warn" style="font-size:9px">BOTH</span>':'<span class="badge badge-success" style="font-size:9px">SYP</span>';
       contentHTML=`
         <div class="card"><div class="card-header"><span class="card-title warn">${S.trader==='Admin'?'ALL MILLS':'MY MILLS'}</span><button class="btn btn-default btn-sm" onclick="showMillModal()">+ Add</button></div>
-          <div style="overflow-x:auto"><table><thead><tr>${S.trader==='Admin'?'<th>👤</th>':''}<th>Mill</th><th>Locations</th><th>Trades</th><th>Volume</th><th></th></tr></thead><tbody>
+          <div style="overflow-x:auto"><table><thead><tr>${S.trader==='Admin'?'<th>👤</th>':''}<th>Mill</th><th>Dept</th><th>Locations</th><th>Trades</th><th>Volume</th><th></th></tr></thead><tbody>
             ${mills.length?mills.map(m=>{
               const locs=m.locations||[m.origin].filter(Boolean);
               const trades=S.trader==='Admin'?S.buys.filter(b=>b.mill===m.name):S.buys.filter(b=>b.mill===m.name&&(b.trader===S.trader||!b.trader));
               const vol=trades.reduce((s,b)=>s+(b.volume||0),0);
-              return`<tr>${S.trader==='Admin'?`<td><span style="display:inline-block;width:18px;height:18px;border-radius:50%;background:${traderColor(m.trader||'Ian P')};color:var(--bg);font-size:9px;font-weight:700;text-align:center;line-height:18px" title="${m.trader||'Ian P'}">${traderInitial(m.trader||'Ian P')}</span></td>`:''}<td class="bold">${m.name}</td><td style="font-size:10px">${locs.length?locs.join(', '):'—'}</td><td class="right">${trades.length}</td><td class="right">${fmtN(vol)} MBF</td><td style="white-space:nowrap"><button class="btn btn-default btn-sm" onclick="editMill('${m.name}')">Edit</button> <button class="btn btn-default btn-sm" onclick="deleteMill('${m.name}')" style="color:var(--negative)">×</button></td></tr>`;
-            }).join(''):`<tr><td colspan="${S.trader==='Admin'?6:5}" class="empty-state">No mills yet</td></tr>`}
+              return`<tr>${S.trader==='Admin'?`<td><span style="display:inline-block;width:18px;height:18px;border-radius:50%;background:${traderColor(m.trader||'Ian P')};color:var(--bg);font-size:9px;font-weight:700;text-align:center;line-height:18px" title="${m.trader||'Ian P'}">${traderInitial(m.trader||'Ian P')}</span></td>`:''}<td class="bold">${m.name}</td><td>${deptBadge(m.department||'syp')}</td><td style="font-size:10px">${locs.length?locs.join(', '):'—'}</td><td class="right">${trades.length}</td><td class="right">${fmtN(vol)} MBF</td><td style="white-space:nowrap"><button class="btn btn-default btn-sm" onclick="editMill('${m.name}')">Edit</button> <button class="btn btn-default btn-sm" onclick="deleteMill('${m.name}')" style="color:var(--negative)">×</button></td></tr>`;
+            }).join(''):`<tr><td colspan="${S.trader==='Admin'?7:6}" class="empty-state">No mills yet</td></tr>`}
           </tbody></table></div></div>`;
     }
 
