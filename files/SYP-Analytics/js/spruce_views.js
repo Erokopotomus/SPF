@@ -437,44 +437,6 @@ function renderMarginView() {
         <div class="kpi-sub">35-45% tiered</div>
       </div>
     </div>
-    
-    <div class="card">
-      <div class="card-header"><span class="card-title">Commission Structure</span></div>
-      <div class="card-body">
-        <div class="grid-2">
-          <div>
-            <h4 style="color:var(--muted);font-size:11px;margin-bottom:8px">ORDER TYPE SPLITS</h4>
-            <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border)">
-              <span>TRANSIT (Buyer goes long)</span>
-              <span style="font-family:monospace">60% Buy / 40% Sell</span>
-            </div>
-            <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border)">
-              <span>FIRM (Back-to-back)</span>
-              <span style="font-family:monospace">40% Buy / 60% Sell</span>
-            </div>
-            <div style="display:flex;justify-content:space-between;padding:8px 0">
-              <span>SHORT (Sell before buy)</span>
-              <span style="font-family:monospace">40% Buy / 60% Sell</span>
-            </div>
-          </div>
-          <div>
-            <h4 style="color:var(--muted);font-size:11px;margin-bottom:8px">YOUR CUT OF GROSS MARGIN</h4>
-            <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border)">
-              <span>First $100,000</span>
-              <span style="font-family:monospace;color:var(--positive)">35%</span>
-            </div>
-            <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border)">
-              <span>$100,000 - $150,000</span>
-              <span style="font-family:monospace;color:var(--positive)">40%</span>
-            </div>
-            <div style="display:flex;justify-content:space-between;padding:8px 0">
-              <span>Over $150,000</span>
-              <span style="font-family:monospace;color:var(--positive)">45%</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
   `;
 }
 
@@ -616,31 +578,7 @@ function renderSPFDashboard() {
         <div class="kpi-value positive">${fmt(marginStats.compBasis)}</div>
       </div>
     </div>
-    
-    <div class="card" style="margin-bottom:20px">
-      <div class="card-header"><span class="card-title">Commission Structure</span></div>
-      <div class="card-body">
-        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px">
-          <div style="background:var(--panel-alt);border-radius:4px;padding:12px">
-            <div style="color:var(--muted);font-size:10px">TRANSIT</div>
-            <div style="font-weight:600">60% Buy / 40% Sell</div>
-          </div>
-          <div style="background:var(--panel-alt);border-radius:4px;padding:12px">
-            <div style="color:var(--muted);font-size:10px">FIRM</div>
-            <div style="font-weight:600">40% Buy / 60% Sell</div>
-          </div>
-          <div style="background:var(--panel-alt);border-radius:4px;padding:12px">
-            <div style="color:var(--muted);font-size:10px">SHORT</div>
-            <div style="font-weight:600">40% Buy / 60% Sell</div>
-          </div>
-          <div style="background:var(--panel-alt);border-radius:4px;padding:12px">
-            <div style="color:var(--muted);font-size:10px">Your Cut</div>
-            <div style="font-weight:600;color:var(--positive)">35% → 40% → 45%</div>
-          </div>
-        </div>
-      </div>
-    </div>
-    
+
     <div class="grid-3" style="margin-bottom:20px">
       <div class="card" onclick="go('reload')" style="cursor:pointer">
         <div class="card-body" style="text-align:center;padding:24px">
